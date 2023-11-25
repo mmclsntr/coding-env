@@ -1,0 +1,12 @@
+version: "3.0"
+
+services:
+  workspace:
+    build: .
+    restart: always
+    tty: true
+    volumes:
+      - ./app:/root/app
+    environment:
+      - 'PS1=[\u@\h \W] \$$ '
+    command: /bin/bash -c "eval \"$(anyenv init -)\" && bash"
