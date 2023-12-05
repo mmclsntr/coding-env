@@ -46,6 +46,11 @@ Plug 'sheerun/vim-polyglot'
 "Color Scheme
 Plug 'tomasr/molokai'
 
+" Buffer kill
+Plug 'qpkorr/vim-bufkill'
+" Alter command
+Plug 'tyru/vim-altercmd'
+
 " coc.nvim
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
@@ -141,6 +146,15 @@ let g:vim_markdown_conceal_code_blocks = 0
 let Grep_Default_Options = '-IR'
 let Grep_Skip_Files = '*.log *.db'
 let Grep_Skip_Dirs = '.git node_modules __pycache__'
+
+" bufkill
+" Mappings
+autocmd VimEnter * AlterCommand bun BUN
+autocmd VimEnter * AlterCommand bd BD
+autocmd VimEnter * AlterCommand bw BW
+autocmd VimEnter * AlterCommand BD bd
+autocmd VimEnter * AlterCommand BW bw
+autocmd VimEnter * AlterCommand BUN bun
 
 " vim-airline
 let g:airline_theme = 'papercolor'
