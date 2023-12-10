@@ -46,8 +46,8 @@ Plug 'tomasr/molokai'
 
 " Functions
 " NerdTree
-Plug 'scrooloose/nerdtree'
-Plug 'jistr/vim-nerdtree-tabs'
+Plug 'preservim/nerdtree'
+"Plug 'jistr/vim-nerdtree-tabs'
 
 " Git
 Plug 'tpope/vim-fugitive'
@@ -57,7 +57,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'qpkorr/vim-bufkill'
 
 " Alter command
-Plug 'tyru/vim-altercmd'
+Plug 'kana/vim-altercmd'
 
 " coc.nvim
 "Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -75,6 +75,21 @@ Plug 'prabirshrestha/asyncomplete-lsp.vim'
 call plug#end()
 
 filetype plugin indent on
+
+
+"*****************************************************************************
+" Function
+"*****************************************************************************
+
+" Install check
+function s:is_plugged(name)
+    if exists('g:plugs') && has_key(g:plugs, a:name) && isdirectory(g:plugs[a:name].dir)
+        return 1
+    else
+        return 0
+    endif
+endfunction
+
 
 "*****************************************************************************
 " Plugin configuration
@@ -146,8 +161,15 @@ let g:NERDTreeShowBookmarks=1
 let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
 let g:NERDTreeWinSize = 50
 let g:nerdtree_tabs_focus_on_files=1
-"let g:nerdtree_tabs_open_on_console_startup=1
 
+" keymap
+"" NERDTree
+nnoremap <space>e :NERDTreeToggle<CR>
+"" Buffer nav
+noremap <leader>p :bp<CR>
+noremap <leader>n :bn<CR>
+"" Close buffer
+noremap <leader>c :BW<CR>
 
 " LSP
 function! s:on_lsp_buffer_enabled() abort
@@ -220,15 +242,6 @@ let g:vista_echo_cursor = 0
 " Polyglot
 let g:vim_markdown_conceal = 0
 let g:vim_markdown_conceal_code_blocks = 0
-
-" bufkill
-" Mappings
-autocmd VimEnter * AlterCommand bun BUN
-autocmd VimEnter * AlterCommand bd BD
-autocmd VimEnter * AlterCommand bw BW
-autocmd VimEnter * AlterCommand BD bd
-autocmd VimEnter * AlterCommand BW bw
-autocmd VimEnter * AlterCommand BUN bun
 
 " vim-airline
 let g:airline_theme = 'papercolor'
@@ -410,26 +423,3 @@ cnoreabbrev WQ wq
 cnoreabbrev W w
 cnoreabbrev Q q
 cnoreabbrev Qall qall
-
-
-"*****************************************************************************
-" Vim-PLug core
-"*****************************************************************************
-if has('vim_starting')
-  set nocompatible               " Be iMproved
-endif
-
-let vimplug_exists=expand('~/.vim/autoload/plug.vim')
-
-if !filereadable(vimplug_exists)
-  if !executable("curl")
-    echoerr "You have to install curl or first install vim-plug yourself!"
-    execute "q!"
-  endif
-  echo "Installing Vim-Plug..."
-  echo ""
-  silent !\curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  let g:not_finish_vimplug = "yes"
-
-  autocmd VimEnter * PlugInstall
-endif
