@@ -1,8 +1,8 @@
 build-and-start:
-	docker compose up -d --build
+	HOSTNAME=`hostname` docker compose up -d --build
 
 start:
-	docker compose up -d
+	HOSTNAME=`hostname` docker compose up -d
 
 workspace:
-	docker compose exec workspace bash
+	HOSTNAME=`hostname` docker compose exec workspace bash

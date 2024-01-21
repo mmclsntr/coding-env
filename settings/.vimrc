@@ -59,9 +59,6 @@ Plug 'qpkorr/vim-bufkill'
 " Alter command
 Plug 'kana/vim-altercmd'
 
-" coc.nvim
-"Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
 " Outline view
 Plug 'liuchengxu/vista.vim'
 
@@ -100,62 +97,9 @@ let g:indentLine_enabled = 1
 let g:indentLine_char = '¦'
 let g:indentLine_faster = 1
 
-"" Coc.nvim
-"let g:coc_global_extensions = [
-"            \'coc-highlight',
-"            \'coc-diagnostic',
-"            \'coc-lists',
-"            \'coc-json',
-"            \'coc-git',
-"            \'coc-pyright',
-"            \'coc-go',
-"            \'coc-vetur',
-"            \'coc-tsserver',
-"            \'coc-sh',
-"            \'coc-markdownlint',
-"            \'coc-vimlsp',
-"            \'coc-explorer',
-"            \'coc-css',
-"            \'coc-html',
-"            \'coc-yaml'
-"            \]
-"
-"" Make <CR> auto-select the first completion item and notify coc.nvim to
-"" format on enter, <cr> could be remapped by other vim plugin
-"inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
-"                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-"
-"" Use `[g` and `]g` to navigate diagnostics
-"" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-"nmap <silent> [g <Plug>(coc-diagnostic-prev)
-"nmap <silent> ]g <Plug>(coc-diagnostic-next)
-"
-"" GoTo code navigation.
-"nmap <silent> gd <Plug>(coc-definition)
-"nmap <silent> gy <Plug>(coc-type-definition)
-"nmap <silent> gi <Plug>(coc-implementation)
-"nmap <silent> gr <Plug>(coc-references)
-"nmap <silent> <space>rn <Plug>(coc-rename)
-"nmap <silent> <space>fmt <Plug>(coc-format)
-"
-"" Use K to show documentation in preview window.
-"nnoremap <silent> K :call ShowDocumentation()<CR>
-"function! ShowDocumentation()
-"  if CocAction('hasProvider', 'hover')
-"    call CocActionAsync('doHover')
-"  else
-"    call feedkeys('K', 'in')
-"  endif
-"endfunction
-"
-"" Highlight the symbol and its references when holding the cursor.
-"autocmd CursorHold * silent call CocActionAsync('highlight')
-"
-"" coc-explorer
-"nnoremap <space>e :CocCommand explorer --no-toggle<CR>
-
 " NERDTree
 let g:NERDTreeChDirMode=2
+let g:NERDTreeShowHidden = 1
 let g:NERDTreeSortOrder=['^__\.py$', '\/$', '*', '\.swp$', '\.bak$', '\~$']
 let g:NERDTreeShowBookmarks=1
 let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
@@ -193,6 +137,7 @@ augroup lsp_install
     autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
 augroup END
 
+" lsp_settings
 let g:lsp_settings_servers_dir = $HOME . '/.local/share/vim-lsp-settings/servers'
 let g:lsp_settings = {
 \   'pyls-all': {
@@ -292,8 +237,12 @@ nmap <Esc><Esc> :nohlsearch<CR><Esc>
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
 
 " Copy/Paste/Cut
-set clipboard+=unnamed,autoselect
-set paste
+if system('uname -s') == "Darwin\n"
+  set clipboard=unnamed "OSX
+else
+  set clipboard=unnamedplus "Linux
+endif
+"set paste
 
 
 " Buffers

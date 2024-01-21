@@ -6,8 +6,10 @@ services:
     restart: always
     tty: true
     volumes:
+      - ${HOME}/.Xauthority:/root/.Xauthority
       - ./app:/root/app
       - ./settings:/root/settings
     environment:
       - 'PS1=[\u@\h \W] \$$ '
+      - DISPLAY=${HOSTNAME}:0
     command: /bin/bash -c "eval \"$(anyenv init -)\" && bash"
