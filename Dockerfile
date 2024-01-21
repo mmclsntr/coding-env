@@ -32,4 +32,4 @@ RUN asdf plugin add nodejs && \
 
 RUN asdf install
 
-WORKDIR /root/app
+WORKDIR /root/workdir

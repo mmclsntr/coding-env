@@ -7,7 +7,7 @@ services:
     tty: true
     volumes:
       - ${HOME}/.Xauthority:/root/.Xauthority
-      - ./app:/root/app
+      - ./workdir:/root/workdir
       - ./settings:/root/settings
     environment:
       - 'PS1=[\u@\h \W] \$$ '
