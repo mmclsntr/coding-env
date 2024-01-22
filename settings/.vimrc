@@ -46,8 +46,9 @@ Plug 'tomasr/molokai'
 
 " Functions
 " NerdTree
-Plug 'preservim/nerdtree'
-"Plug 'jistr/vim-nerdtree-tabs'
+Plug 'preservim/nerdtree' |
+            \ Plug 'Xuyuanp/nerdtree-git-plugin' |
+            \ Plug 'jistr/vim-nerdtree-tabs'
 
 " Git
 Plug 'tpope/vim-fugitive'
@@ -109,6 +110,16 @@ let g:nerdtree_tabs_focus_on_files=1
 " keymap
 "" NERDTree
 nnoremap <space>e :NERDTreeToggle<CR>
+
+" bufkill
+" Mappings
+autocmd VimEnter * AlterCommand bun BUN
+autocmd VimEnter * AlterCommand bd BD
+autocmd VimEnter * AlterCommand bw BW
+autocmd VimEnter * AlterCommand BD bd
+autocmd VimEnter * AlterCommand BW bw
+autocmd VimEnter * AlterCommand BUN bun
+
 "" Buffer nav
 noremap <leader>p :bp<CR>
 noremap <leader>n :bn<CR>
