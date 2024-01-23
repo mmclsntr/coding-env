@@ -12,4 +12,4 @@ services:
     environment:
       - 'PS1=[\u@\h \W] \$$ '
       - DISPLAY=${HOSTNAME}:0
-    command: /bin/bash -c "eval \"$(anyenv init -)\" && bash"
+    command: /bin/bash -c "bash"

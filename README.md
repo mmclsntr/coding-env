@@ -16,3 +16,9 @@ Add alias to `.zshrc`
 ```sh
 alias mvim='sh ~/coding-env/run_vim.sh /root/workdir'
 ```
+
+
+## LSP
+
+:LspInstallServer pyright-langserver
+

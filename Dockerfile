@@ -1,9 +1,13 @@
-FROM debian:bullseye-slim
+FROM arm64v8/debian:bullseye-slim
 
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update \
-    && apt-get install -y libtool-bin libxt-dev clang curl git ruby build-essential libssl-dev libffi-dev libncurses5-dev zlib1g zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev make gcc exuberant-ctags ncurses-term dirmngr gpg gawk
+    && apt-get install -y libtool-bin libxt-dev clang curl git ruby build-essential libssl-dev libffi-dev libncurses5-dev zlib1g zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev exuberant-ctags ncurses-term dirmngr gpg gawk
+
+# install deno
+# RUN curl -fsSL https://deno.land/install.sh | sh
+RUN curl -s https://gist.githubusercontent.com/LukeChannings/09d53f5c364391042186518c8598b85e/raw/ac8cd8c675b985edd4b3e16df63ffef14d1f0e24/deno_install.sh | sh
 
 # for test x11
 RUN apt install -y x11-apps
@@ -18,7 +22,8 @@ RUN ln -s /root/settings/.tool-versions /root/.tool-versions
 # Vim install
 RUN git clone https://github.com/vim/vim.git -b v9.1.0042 /root/vim
 WORKDIR /root/vim/src
-RUN make && make install
+RUN make 
+RUN make install
 
 # asdf install
 RUN git clone https://github.com/asdf-vm/asdf.git /root/.asdf --branch v0.14.0
