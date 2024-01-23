@@ -38,3 +38,6 @@ RUN asdf plugin add nodejs && \
 RUN asdf install
 
 WORKDIR /root/workdir
+
+# Git config
+RUN git config --global --add safe.directory /root/workdir

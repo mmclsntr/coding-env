@@ -46,9 +46,9 @@ Plug 'tomasr/molokai'
 
 " Functions
 " NerdTree
-Plug 'preservim/nerdtree' |
-            \ Plug 'Xuyuanp/nerdtree-git-plugin' |
-            \ Plug 'jistr/vim-nerdtree-tabs'
+"Plug 'preservim/nerdtree' |
+"            \ Plug 'Xuyuanp/nerdtree-git-plugin' |
+"            \ Plug 'jistr/vim-nerdtree-tabs'
 
 " fern vim
 Plug 'lambdalisue/fern.vim'
@@ -144,7 +144,8 @@ let g:indentLine_faster = 1
 
 " fern.vim
 let g:fern#renderer = 'nerdfont'
-let g:fern#disable_drawer_auto_quit   = 1
+let g:fern#disable_drawer_auto_quit = 1
+let g:fern#default_hidden = 1
 nnoremap <space>e :Fern . -reveal=% -drawer -toggle -width=40<CR>
 
 function! s:init_fern() abort
