@@ -103,7 +103,6 @@ call plug#end()
 filetype plugin indent on
 
 
-
 "*****************************************************************************
 " Function
 "*****************************************************************************
@@ -117,6 +116,199 @@ function s:is_plugged(name)
     endif
 endfunction
 
+
+" save session
+function Save_session()
+    mksession! ~/.vim/.session
+endfunction
+
+" restore session
+function Restore_session()
+    if filereadable(expand("~/.vim/.session"))
+        source ~/.vim/.session
+    endif
+endfunction
+
+"*****************************************************************************
+" Basic Setup
+"*****************************************************************************
+
+" Encoding
+set encoding=utf8
+set fileencoding=utf8
+set fileencodings=utf8
+set bomb
+set binary
+set ttyfast
+set mouse-=a
+set ttymouse=xterm2
+
+" Fix backspace indent
+set backspace=indent,eol,start
+
+" Tabs. May be overriten by autocmd rules
+set tabstop=4
+set softtabstop=0
+set shiftwidth=4
+set expandtab
+set indentexpr=
+
+" Searching
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+nmap <Esc><Esc> :nohlsearch<CR><Esc>
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
+
+" Copy/Paste/Cut
+if system('uname -s') == "Darwin\n"
+  set clipboard=unnamed "OSX
+else
+  set clipboard=unnamedplus "Linux
+endif
+
+" Map leader to ,
+let mapleader = "\<Space>"
+nnoremap <Leader>a :echo "Hello"<CR>
+
+" message
+set shortmess+=F
+
+" Buffers
+set hidden
+set nobackup
+set noswapfile
+set noundofile
+set autoread
+
+set fileformats=unix,dos,mac
+set wildmenu wildmode=full
+
+" Disable visualbell
+set belloff=all
+set noerrorbells
+
+" Cursor
+nnoremap j gj
+nnoremap k gk
+nnoremap <Down> gj
+nnoremap <Up>   gk
+
+"*****************************************************************************
+" Visual Settings
+"*****************************************************************************
+syntax on
+set synmaxcol=320
+set ruler
+set number
+set re=0
+
+" Color 256
+set t_Co=256
+if !exists('g:not_finish_vimplug')
+    colorscheme murphy
+endif
+
+" Scroll offset.
+set scrolloff=3
+
+" Status bar
+set laststatus=2
+
+" Use modeline overrides
+set modeline
+set modelines=10
+
+set title
+set titleold="Terminal"
+set titlestring=%F
+
+" VirtualEdit
+set virtualedit=onemore
+
+" Search mappings: These will make it so that going to the next one in a
+" search will center on the line it's found in.
+nnoremap n nzzzv
+nnoremap N Nzzzv
+
+"" conceal
+set conceallevel=0
+let g:vim_json_syntax_conceal = 0
+
+" tab, whitespace highlight
+set list
+set listchars=tab:>.,trail:_,eol:↲,extends:>,precedes:<,nbsp:%
+
+" zenkaku whitespace highlight
+function! ZenkakuSpace()
+    highlight ZenkakuSpace cterm=reverse ctermfg=DarkMagenta gui=reverse guifg=DarkMagenta
+endfunction
+
+if has('syntax')
+    augroup ZenkakuSpace
+        autocmd!
+        autocmd ColorScheme       * call ZenkakuSpace()
+        autocmd VimEnter,WinEnter * match ZenkakuSpace /　/
+    augroup END
+    call ZenkakuSpace()
+endif
+
+"*****************************************************************************
+" Autocmd Rules
+"*****************************************************************************
+" The PC is fast enough, do syntax highlight syncing from start unless 200 lines
+augroup vimrc-sync-fromstart
+  autocmd!
+  autocmd BufEnter * :syntax sync maxlines=1000
+augroup END
+
+augroup vimrc-highlight
+  autocmd!
+  autocmd Syntax * syntax sync minlines=1000
+augroup END
+
+" Remember cursor position
+augroup vimrc-remember-cursor-position
+  autocmd!
+  autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+augroup END
+
+"Grep vim
+augroup GrepCmd
+    autocmd!
+    autocmd QuickFixCmdPost vim,grep,make if len(getqflist()) != 0 | cwindow | endif
+augroup END
+
+" Save undo
+if has('persistent_undo')
+  set undodir=./.vimundo,~/.vimundo
+  augroup SaveUndoFile
+    autocmd!
+    autocmd BufReadPre ~/* setlocal undofile
+  augroup END
+endif
+
+" Session
+augroup SessionAutocommands
+    autocmd!
+    autocmd VimLeave * call Save_session()
+augroup END
+
+"*****************************************************************************
+" Abbreviations
+"*****************************************************************************
+" no one is really happy until you have this shortcuts
+cnoreabbrev W! w!
+cnoreabbrev Q! q!
+cnoreabbrev Qall! qall!
+cnoreabbrev Wq wq
+cnoreabbrev Wa wa
+cnoreabbrev wQ wq
+cnoreabbrev WQ wq
+cnoreabbrev W w
+cnoreabbrev Q q
+cnoreabbrev Qall qall
 
 "*****************************************************************************
 " Plugin configuration
@@ -134,7 +326,7 @@ if s:is_plugged("fern.vim")
     let g:fern#renderer = 'nerdfont'
     let g:fern#disable_drawer_auto_quit = 1
     let g:fern#default_hidden = 1
-    nnoremap <space>e :Fern . -reveal=% -drawer -toggle -width=40<CR>
+    nnoremap <leader>e :Fern . -reveal=% -drawer -toggle -width=40<CR>
 
     function! s:init_fern() abort
       setlocal nonumber
@@ -160,7 +352,7 @@ if s:is_plugged("fern.vim")
 
     augroup fern-custom
       autocmd! *
-      autocmd FileType fern call s:init_fern()
+      autocmd FileType fern nested call s:init_fern()
     augroup END
 
     augroup my-glyph-palette
@@ -185,7 +377,7 @@ if s:is_plugged("vim-altercmd")
     noremap <leader>p :bp<CR>
     noremap <leader>n :bn<CR>
     "" Close buffer
-    noremap <leader>c :bw<CR>
+    noremap <leader>c :BW<CR>
 endif
 
 
@@ -328,7 +520,7 @@ if s:is_plugged("vim-lsp")
         nmap <buffer> gr <plug>(lsp-references)
         nmap <buffer> gi <plug>(lsp-implementation)
         nmap <buffer> gt <plug>(lsp-type-definition)
-        nmap <buffer> <space>rn <plug>(lsp-rename)
+        nmap <buffer> <leader>rn <plug>(lsp-rename)
         nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
         nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
         nmap <buffer> K <plug>(lsp-hover)
@@ -425,175 +617,3 @@ if s:is_plugged("vim-airline")
     let g:airline#extensions#tagbar#enabled = 1
     let g:airline_skip_empty_sections = 1
 endif
-
-"*****************************************************************************
-" Basic Setup
-"*****************************************************************************
-
-" Encoding
-set encoding=utf8
-set fileencoding=utf8
-set fileencodings=utf8
-set bomb
-set binary
-set ttyfast
-set mouse-=a
-set ttymouse=xterm2
-
-" Fix backspace indent
-set backspace=indent,eol,start
-
-" Tabs. May be overriten by autocmd rules
-set tabstop=4
-set softtabstop=0
-set shiftwidth=4
-set expandtab
-set indentexpr=
-
-" Map leader to ,
-let mapleader=','
-
-" Searching
-set hlsearch
-set incsearch
-set ignorecase
-set smartcase
-nmap <Esc><Esc> :nohlsearch<CR><Esc>
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
-
-" Copy/Paste/Cut
-if system('uname -s') == "Darwin\n"
-  set clipboard=unnamed "OSX
-else
-  set clipboard=unnamedplus "Linux
-endif
-"set paste
-
-
-" Buffers
-set hidden
-set nobackup
-set noswapfile
-set noundofile
-set autoread
-
-set fileformats=unix,dos,mac
-set wildmenu wildmode=full
-
-" Disable visualbell
-set belloff=all
-set noerrorbells
-
-" Cursor
-nnoremap j gj
-nnoremap k gk
-nnoremap <Down> gj
-nnoremap <Up>   gk
-
-"*****************************************************************************
-" Visual Settings
-"*****************************************************************************
-syntax on
-set synmaxcol=320
-set ruler
-set number
-set re=0
-
-" Color 256
-set t_Co=256
-if !exists('g:not_finish_vimplug')
-    colorscheme murphy
-endif
-
-" Scroll offset.
-set scrolloff=3
-
-" Status bar
-set laststatus=2
-
-" Use modeline overrides
-set modeline
-set modelines=10
-
-set title
-set titleold="Terminal"
-set titlestring=%F
-
-" VirtualEdit
-set virtualedit=onemore
-
-" Search mappings: These will make it so that going to the next one in a
-" search will center on the line it's found in.
-nnoremap n nzzzv
-nnoremap N Nzzzv
-
-"" conceal
-set conceallevel=0
-let g:vim_json_syntax_conceal = 0
-
-" tab, whitespace highlight
-set list
-set listchars=tab:>.,trail:_,eol:↲,extends:>,precedes:<,nbsp:%
-
-" zenkaku whitespace highlight
-function! ZenkakuSpace()
-    highlight ZenkakuSpace cterm=reverse ctermfg=DarkMagenta gui=reverse guifg=DarkMagenta
-endfunction
-
-if has('syntax')
-    augroup ZenkakuSpace
-        autocmd!
-        autocmd ColorScheme       * call ZenkakuSpace()
-        autocmd VimEnter,WinEnter * match ZenkakuSpace /　/
-    augroup END
-    call ZenkakuSpace()
-endif
-
-"*****************************************************************************
-" Autocmd Rules
-"*****************************************************************************
-" The PC is fast enough, do syntax highlight syncing from start unless 200 lines
-augroup vimrc-sync-fromstart
-  autocmd!
-  autocmd BufEnter * :syntax sync maxlines=1000
-augroup END
-
-augroup vimrc-highlight
-  autocmd!
-  autocmd Syntax * syntax sync minlines=1000
-augroup END
-
-" Remember cursor position
-augroup vimrc-remember-cursor-position
-  autocmd!
-  autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
-augroup END
-
-"Grep vim
-augroup GrepCmd
-    autocmd!
-    autocmd QuickFixCmdPost vim,grep,make if len(getqflist()) != 0 | cwindow | endif
-augroup END
-
-" Save undo
-if has('persistent_undo')
-  set undodir=./.vimundo,~/.vimundo
-  augroup SaveUndoFile
-    autocmd!
-    autocmd BufReadPre ~/* setlocal undofile
-  augroup END
-endif
-"*****************************************************************************
-" Abbreviations
-"*****************************************************************************
-" no one is really happy until you have this shortcuts
-cnoreabbrev W! w!
-cnoreabbrev Q! q!
-cnoreabbrev Qall! qall!
-cnoreabbrev Wq wq
-cnoreabbrev Wa wa
-cnoreabbrev wQ wq
-cnoreabbrev WQ wq
-cnoreabbrev W w
-cnoreabbrev Q q
-cnoreabbrev Qall qall
