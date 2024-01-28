@@ -261,14 +261,15 @@ call ddc#custom#patch_global('sources', [
  \ ])
 call ddc#custom#patch_global('sourceOptions', {
  \ '_': {
- \   'matchers': ['matcher_head'],
  \   'sorters': ['sorter_rank'],
  \   'converters': ['converter_remove_overlap'],
  \ },
- \ 'around': {'mark': 'Around'},
+ \ 'around': {
+ \   'mark': 'around',
+ \   'matchers': ['matcher_head']
+ \ },
  \ 'vim-lsp': {
  \   'mark': 'lsp', 
- \   'matchers': ['matcher_head'],
  \   'forceCompletionPattern': '\.|:|->|"\w+/*'
  \ },
  \ 'file': {
