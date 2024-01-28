@@ -12,4 +12,4 @@ working_dir=${base%/}/${abs_dir#/}
 echo $working_dir
 echo $file
 
-HOSTNAME=`hostname` docker compose exec -w $working_dir workspace vim $file
+HOSTNAME=`hostname` docker compose exec -w $working_dir workspace /bin/bash -c "source ~/.bashrc && vim $file"

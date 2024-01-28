@@ -2,12 +2,18 @@
 
 
 ## Setup
-Install XQuartz
+1) Install XQuartz
 
-Create workspace symbolic link
+2) Create workspace symbolic link
 
 ```sh
 ln -s {workspace} workdir
+```
+
+3) Run init script
+
+```sh
+./init.sh
 ```
 
 ## for global vim
@@ -17,8 +23,13 @@ Add alias to `.zshrc`
 alias mvim='sh ~/coding-env/run_vim.sh /root/workdir'
 ```
 
+## Config
 
-## LSP
+Edit `custom/setup_config.json`
 
-:LspInstallServer pyright-langserver
+## Support language
 
+- Node.js
+- Python
+- Golang
+- Java

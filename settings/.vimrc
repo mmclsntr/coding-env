@@ -15,16 +15,20 @@ if !filereadable(vimplug_exists)
   echo "Installing Vim-Plug..."
   echo ""
   silent !\curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        \ >/dev/null 2>&1
   let g:not_finish_vimplug = "yes"
 
-  autocmd VimEnter * PlugInstall
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
+
+autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+  \| PlugInstall --sync | source $MYVIMRC
+\| endif
 
 "*****************************************************************************
 " Plug install packages
 "*****************************************************************************
 call plug#begin(expand('~/.vim/plugged'))
-
 
 " Visual
 " Airline
@@ -42,13 +46,6 @@ Plug 'sheerun/vim-polyglot'
 
 " Color Scheme
 Plug 'tomasr/molokai'
-
-
-" Functions
-" NerdTree
-"Plug 'preservim/nerdtree' |
-"            \ Plug 'Xuyuanp/nerdtree-git-plugin' |
-"            \ Plug 'jistr/vim-nerdtree-tabs'
 
 " fern vim
 Plug 'lambdalisue/fern.vim'
@@ -73,9 +70,6 @@ Plug 'liuchengxu/vista.vim'
 
 " LSP
 Plug 'prabirshrestha/vim-lsp'
-Plug 'mattn/vim-lsp-settings'
-"Plug 'prabirshrestha/asyncomplete.vim'
-"Plug 'prabirshrestha/asyncomplete-lsp.vim'
 
 " popup and help
 Plug 'matsui54/denops-signature_help'
@@ -83,7 +77,7 @@ Plug 'matsui54/denops-popup-preview.vim'
 
 " ddc.vim本体
 Plug 'Shougo/ddc.vim'
-" DenoでVimプラグインを開発するためのプラグイン
+" Deno plugin
 Plug 'vim-denops/denops.vim'
 " ポップアップウィンドウを表示するプラグイン
 Plug 'Shougo/pum.vim'
@@ -104,10 +98,10 @@ Plug 'Shougo/ddc-sorter_rank'
 Plug 'Shougo/ddc-converter_remove_overlap'
 
 
-
 call plug#end()
 
 filetype plugin indent on
+
 
 
 "*****************************************************************************
@@ -128,193 +122,309 @@ endfunction
 " Plugin configuration
 "*****************************************************************************
 
-" IndentLine
-let g:indentLine_enabled = 1
-let g:indentLine_char = '¦'
-let g:indentLine_faster = 1
+if s:is_plugged("indentLine")
+    " IndentLine
+    let g:indentLine_enabled = 1
+    let g:indentLine_char = '¦'
+    let g:indentLine_faster = 1
+endif
 
-" NERDTree
-"let g:NERDTreeChDirMode=2
-"let g:NERDTreeShowHidden = 1
-"let g:NERDTreeSortOrder=['^__\.py$', '\/$', '*', '\.swp$', '\.bak$', '\~$']
-"let g:NERDTreeShowBookmarks=1
-"let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
-"let g:NERDTreeWinSize = 50
-"let g:nerdtree_tabs_focus_on_files=1
+if s:is_plugged("fern.vim")
+    " fern.vim
+    let g:fern#renderer = 'nerdfont'
+    let g:fern#disable_drawer_auto_quit = 1
+    let g:fern#default_hidden = 1
+    nnoremap <space>e :Fern . -reveal=% -drawer -toggle -width=40<CR>
 
-" fern.vim
-let g:fern#renderer = 'nerdfont'
-let g:fern#disable_drawer_auto_quit = 1
-let g:fern#default_hidden = 1
-nnoremap <space>e :Fern . -reveal=% -drawer -toggle -width=40<CR>
+    function! s:init_fern() abort
+      setlocal nonumber
+      " Use 'select' instead of 'edit' for default 'open' action
+      nmap <buffer><expr>
+            \ <Plug>(fern-my-open-expand-collapse)
+            \ fern#smart#leaf(
+            \   "\<Plug>(fern-action-open:select)",
+            \   "\<Plug>(fern-action-expand)",
+            \   "\<Plug>(fern-action-collapse)",
+            \ )
+      nmap <buffer> <CR> <Plug>(fern-my-open-expand-collapse)
+      nmap <buffer> a <Plug>(fern-action-new-path)
+      nmap <buffer> A <Plug>(fern-action-choice)
+      nmap <buffer> d <Plug>(fern-action-remove)
+      nmap <buffer> <Backspace> <Plug>(fern-action-collapse)
+      nmap <buffer> r <Plug>(fern-action-move)
+      nmap <buffer> R <Plug>(fern-action-reload)
+      nmap <buffer> <nowait> i <Plug>(fern-action-hidden:toggle)
+      nmap <buffer> c <Plug>(fern-action-clipboard-copy)
+      nmap <buffer> p <Plug>(fern-action-clipboard-paste)
+    endfunction
 
-function! s:init_fern() abort
-  setlocal nonumber
-  " Use 'select' instead of 'edit' for default 'open' action
-  nmap <buffer><expr>
-        \ <Plug>(fern-my-open-expand-collapse)
-        \ fern#smart#leaf(
-        \   "\<Plug>(fern-action-open:select)",
-        \   "\<Plug>(fern-action-expand)",
-        \   "\<Plug>(fern-action-collapse)",
-        \ )
-  nmap <buffer> <CR> <Plug>(fern-my-open-expand-collapse)
-  nmap <buffer> a <Plug>(fern-action-new-path)
-  nmap <buffer> A <Plug>(fern-action-choice)
-  nmap <buffer> d <Plug>(fern-action-remove)
-  nmap <buffer> <Backspace> <Plug>(fern-action-collapse)
-  nmap <buffer> r <Plug>(fern-action-move)
-  nmap <buffer> R <Plug>(fern-action-reload)
-  nmap <buffer> <nowait> i <Plug>(fern-action-hidden:toggle)
-  nmap <buffer> c <Plug>(fern-action-clipboard-copy)
-  nmap <buffer> p <Plug>(fern-action-clipboard-paste)
-endfunction
+    augroup fern-custom
+      autocmd! *
+      autocmd FileType fern call s:init_fern()
+    augroup END
 
-augroup fern-custom
-  autocmd! *
-  autocmd FileType fern call s:init_fern()
-augroup END
+    augroup my-glyph-palette
+      autocmd! *
+      autocmd FileType fern call glyph_palette#apply()
+      autocmd FileType nerdtree,startify call glyph_palette#apply()
+    augroup END
 
-augroup my-glyph-palette
-  autocmd! *
-  autocmd FileType fern call glyph_palette#apply()
-  autocmd FileType nerdtree,startify call glyph_palette#apply()
-augroup END
-
-
-" keymap
-"" NERDTree
-"nnoremap <space>e :NERDTreeToggle<CR>
+endif
 
 " bufkill
-" Mappings
-autocmd VimEnter * AlterCommand bun BUN
-autocmd VimEnter * AlterCommand bd BD
-autocmd VimEnter * AlterCommand bw BW
-autocmd VimEnter * AlterCommand BD bd
-autocmd VimEnter * AlterCommand BW bw
-autocmd VimEnter * AlterCommand BUN bun
+if s:is_plugged("vim-altercmd")
+    " Mappings
+    autocmd VimEnter * AlterCommand bun BUN
+    autocmd VimEnter * AlterCommand bd BD
+    autocmd VimEnter * AlterCommand bw BW
+    autocmd VimEnter * AlterCommand BD bd
+    autocmd VimEnter * AlterCommand BW bw
+    autocmd VimEnter * AlterCommand BUN bun
 
-"" Buffer nav
-noremap <leader>p :bp<CR>
-noremap <leader>n :bn<CR>
-"" Close buffer
-noremap <leader>c :BW<CR>
+    "" Buffer nav
+    noremap <leader>p :bp<CR>
+    noremap <leader>n :bn<CR>
+    "" Close buffer
+    noremap <leader>c :bw<CR>
+endif
+
 
 " LSP
-function! s:on_lsp_buffer_enabled() abort
-    setlocal omnifunc=lsp#complete
-    setlocal signcolumn=yes
-    "if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
-    nmap <buffer> gd <plug>(lsp-definition)
-    nmap <buffer> gr <plug>(lsp-references)
-    nmap <buffer> gi <plug>(lsp-implementation)
-    nmap <buffer> gt <plug>(lsp-type-definition)
-    nmap <buffer> <space>rn <plug>(lsp-rename)
-    nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
-    nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
-    nmap <buffer> K <plug>(lsp-hover)
+if s:is_plugged("vim-lsp")
 
-    let g:lsp_format_sync_timeout = 1000
-endfunction
+    " nodejs
+    if executable('typescript-language-server')
+        au User lsp_setup call lsp#register_server({
+          \ 'name': 'javascript support using typescript-language-server',
+          \ 'cmd': { server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
+          \ 'root_uri': { server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_directory(lsp#utils#get_buffer_path(), '.git/..'))},
+          \ 'whitelist': ['javascript', 'javascript.jsx', 'javascriptreact']
+          \ })
+    endif
 
-augroup lsp_install
-    au!
-    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
-    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
-augroup END
+    " python
+    if executable('pyls')
+        au User lsp_setup call lsp#register_server({
+            \ 'name': 'pyls',
+            \ 'cmd': {server_info->['pyls']},
+            \ 'whitelist': ['python'],
+            \ })
+    endif
 
-" lsp_settings
-let g:lsp_settings_servers_dir = $HOME . '/.local/share/vim-lsp-settings/servers'
-let g:lsp_settings = {
-\   'pyls-all': {
-\     'workspace_config': {
-\       'pyls': {
-\         'configurationSources': ['flake8']
-\      }
-\    }
-\  }
-\}
+    " golang
+    if executable('gopls')
+        au User lsp_setup call lsp#register_server({
+            \ 'name': 'gopls',
+            \ 'cmd': {server_info->['gopls', '-remote=auto']},
+            \ 'allowlist': ['go', 'gomod', 'gohtmltmpl', 'gotexttmpl'],
+            \ })
+        autocmd BufWritePre *.go
+            \ call execute('LspDocumentFormatSync') |
+            \ call execute('LspCodeActionSync source.organizeImports')
+    endif
 
-let g:lsp_diagnostics_enabled = 1
-let g:lsp_diagnostics_echo_cursor = 1
-let g:lsp_signature_help_enabled = 0
-let g:lsp_diagnostics_signs_enabled = 1
-let g:lsp_diagnostics_signs_error = {'text': '✗'}
-let g:lsp_diagnostics_signs_warning = {'text': '‼'}
-let g:lsp_diagnostics_signs_hint = {'text': '?'}
-let g:lsp_diagnostics_signs_information = {'text': 'i'}
-let g:lsp_diagnostics_virtual_text_enabled = 0
+    " java
+    if executable('java') && filereadable(expand('~/javalsp/eclipse.jdt.ls/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar'))
+        au User lsp_setup call lsp#register_server({
+            \ 'name': 'eclipse.jdt.ls',
+            \ 'cmd': {server_info->[
+            \     'java',
+            \     '-Declipse.application=org.eclipse.jdt.ls.core.id1',
+            \     '-Dosgi.bundles.defaultStartLevel=4',
+            \     '-Declipse.product=org.eclipse.jdt.ls.core.product',
+            \     '-Dlog.level=ALL',
+            \     '-noverify',
+            \     '-Dfile.encoding=UTF-8',
+            \     '-Xmx1G',
+            \     '-jar',
+            \     expand('~/javalsp/eclipse.jdt.ls/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar'),
+            \     '-configuration',
+            \     expand('~/lsp/eclipse.jdt.ls/config_linux'),
+            \     '-data',
+            \     getcwd()
+            \ ]},
+            \ 'whitelist': ['java'],
+            \ })
+    endif
 
-" Asyncomplete
-"let g:asyncomplete_auto_popup = 1
-"let g:asyncomplete_auto_completeopt = 1
-"set completeopt=menuone,noinsert,noselect,preview
-"let g:asyncomplete_popup_delay = 200
+    " html
+    if executable('vscode-html-language-server')
+      au User lsp_setup call lsp#register_server({
+        \ 'name': 'vscode-html-language-server',
+        \ 'cmd': {server_info->['vscode-html-language-server', '--stdio']},
+        \ 'whitelist': ['html'],
+      \ })
+    endif
 
-" ddc.vim
-call ddc#custom#patch_global('ui', 'pum')
-call ddc#custom#patch_global('sources', [
- \ 'around',
- \ 'vim-lsp',
- \ 'file'
- \ ])
-call ddc#custom#patch_global('sourceOptions', {
- \ '_': {
- \   'sorters': ['sorter_rank'],
- \   'converters': ['converter_remove_overlap'],
- \ },
- \ 'around': {
- \   'mark': 'around',
- \   'matchers': ['matcher_head']
- \ },
- \ 'vim-lsp': {
- \   'mark': 'lsp', 
- \   'forceCompletionPattern': '\.|:|->|"\w+/*'
- \ },
- \ 'file': {
- \   'mark': 'file',
- \   'isVolatile': v:true, 
- \   'forceCompletionPattern': '\S/\S*'
- \ }})
+    " css
+    if executable('vscode-css-language-server')
+      au User lsp_setup call lsp#register_server({
+        \ 'name': 'vscode-css-language-server',
+        \ 'cmd': {server_info->['vscode-css-language-server', '--stdio']},
+        \ 'whitelist': ['css', 'less', 'sass', 'scss'],
+      \ })
+    endif
 
-call ddc#enable()
+    " json
+    if executable('vscode-jss-language-server')
+      au User lsp_setup call lsp#register_server({
+        \ 'name': 'vscode-json-language-server',
+        \ 'cmd': {server_info->['vscode-json-language-server', '--stdio']},
+        \ 'whitelist': ['json', 'jsonc'],
+      \ })
+    endif
 
-" pum
-inoremap <C-n>   <Cmd>call pum#map#insert_relative(+1)<CR>
-inoremap <C-p>   <Cmd>call pum#map#insert_relative(-1)<CR>
-inoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
-inoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
-inoremap <PageDown> <Cmd>call pum#map#insert_relative_page(+1)<CR>
-inoremap <PageUp>   <Cmd>call pum#map#insert_relative_page(-1)<CR>
+    " docker
+    if executable('docker-langserver')
+        au User lsp_setup call lsp#register_server({
+            \ 'name': 'docker-langserver',
+            \ 'cmd': {server_info->[&shell, &shellcmdflag, 'docker-langserver --stdio']},
+            \ 'whitelist': ['dockerfile'],
+            \ })
+    endif
 
-" popup
-call popup_preview#enable()
-call signature_help#enable()
+    " yaml
+    if executable('yaml-language-server')
+      augroup LspYaml
+       autocmd!
+       autocmd User lsp_setup call lsp#register_server({
+           \ 'name': 'yaml-language-server',
+           \ 'cmd': {server_info->['yaml-language-server', '--stdio']},
+           \ 'allowlist': ['yaml', 'yaml.ansible'],
+           \ 'workspace_config': {
+           \   'yaml': {
+           \     'validate': v:true,
+           \     'hover': v:true,
+           \     'completion': v:true,
+           \     'customTags': [],
+           \     'schemas': {},
+           \     'schemaStore': { 'enable': v:true },
+           \   }
+           \ }
+           \})
+      augroup END
+    endif
+
+    " vimrc
+    if executable('vim-language-server')
+      augroup LspVim
+        autocmd!
+        autocmd User lsp_setup call lsp#register_server({
+            \ 'name': 'vim-language-server',
+            \ 'cmd': {server_info->['vim-language-server', '--stdio']},
+            \ 'whitelist': ['vim'],
+            \ 'initialization_options': {
+            \   'vimruntime': $VIMRUNTIME,
+            \   'runtimepath': &rtp,
+            \ }})
+      augroup END
+    endif
+
+    function! s:on_lsp_buffer_enabled() abort
+        setlocal omnifunc=lsp#complete
+        setlocal signcolumn=yes
+        "if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+        nmap <buffer> gd <plug>(lsp-definition)
+        nmap <buffer> gr <plug>(lsp-references)
+        nmap <buffer> gi <plug>(lsp-implementation)
+        nmap <buffer> gt <plug>(lsp-type-definition)
+        nmap <buffer> <space>rn <plug>(lsp-rename)
+        nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
+        nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
+        nmap <buffer> K <plug>(lsp-hover)
+
+        let g:lsp_format_sync_timeout = 1000
+    endfunction
+
+    augroup lsp_install
+        au!
+        " call s:on_lsp_buffer_enabled only for languages that has the server registered.
+        autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+    augroup END
+
+    let g:lsp_diagnostics_enabled = 1
+    let g:lsp_diagnostics_echo_cursor = 1
+    let g:lsp_signature_help_enabled = 0
+    let g:lsp_diagnostics_signs_enabled = 1
+    let g:lsp_diagnostics_signs_error = {'text': '✗'}
+    let g:lsp_diagnostics_signs_warning = {'text': '‼'}
+    let g:lsp_diagnostics_signs_hint = {'text': '?'}
+    let g:lsp_diagnostics_signs_information = {'text': 'i'}
+    let g:lsp_diagnostics_virtual_text_enabled = 0
+endif
+
+if s:is_plugged("ddc.vim") && s:is_plugged("pum.vim")
+    " ddc.vim
+    call ddc#custom#patch_global('ui', 'pum')
+    call ddc#custom#patch_global('sources', [
+     \ 'around',
+     \ 'vim-lsp',
+     \ 'file'
+     \ ])
+    call ddc#custom#patch_global('sourceOptions', {
+     \ '_': {
+     \   'sorters': ['sorter_rank'],
+     \   'converters': ['converter_remove_overlap'],
+     \ },
+     \ 'around': {
+     \   'mark': 'around',
+     \   'matchers': ['matcher_head']
+     \ },
+     \ 'vim-lsp': {
+     \   'mark': 'lsp', 
+     \   'forceCompletionPattern': '\.|:|->|"\w+/*'
+     \ },
+     \ 'file': {
+     \   'mark': 'file',
+     \   'isVolatile': v:true, 
+     \   'forceCompletionPattern': '\S/\S*'
+     \ }})
+
+    call ddc#enable()
+
+    " pum
+    inoremap <C-n>   <Cmd>call pum#map#insert_relative(+1)<CR>
+    inoremap <C-p>   <Cmd>call pum#map#insert_relative(-1)<CR>
+    inoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
+    inoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
+    inoremap <PageDown> <Cmd>call pum#map#insert_relative_page(+1)<CR>
+    inoremap <PageUp>   <Cmd>call pum#map#insert_relative_page(-1)<CR>
+endif
+
+if s:is_plugged("denops-popup-preview.vim") && s:is_plugged("denops-signature_help")
+    " popup
+    call popup_preview#enable()
+    call signature_help#enable()
+endif
 
 
-" Vista
-let g:vista_default_executive = 'vim_lsp'
-let g:vista_update_on_text_changed = 1
-let g:vista_sidebar_width = 40
-let g:vista_echo_cursor = 0
+if s:is_plugged("vista.vim")
+    " Vista
+    let g:vista_default_executive = 'vim_lsp'
+    let g:vista_update_on_text_changed = 1
+    let g:vista_sidebar_width = 40
+    let g:vista_echo_cursor = 0
+endif
 
-" Polyglot
-let g:vim_markdown_conceal = 0
-let g:vim_markdown_conceal_code_blocks = 0
+if s:is_plugged("vim-polyglot")
+    " Polyglot
+    let g:vim_markdown_conceal = 0
+    let g:vim_markdown_conceal_code_blocks = 0
+endif
 
-" vim-airline
-let g:airline_theme = 'papercolor'
-let g:airline#extensions#syntastic#enabled = 1
-let g:airline#extensions#branch#enabled = 1
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#formatter = 'default'
-let g:airline#extensions#tabline#show_splits = 1
-let g:airline#extensions#tabline#tab_nr_type = 1
-let g:airline#extensions#tabline#buffer_nr_show = 1
-let g:airline#extensions#tagbar#enabled = 1
-let g:airline_skip_empty_sections = 1
-
+if s:is_plugged("vim-airline")
+    " vim-airline
+    let g:airline_theme = 'papercolor'
+    let g:airline#extensions#syntastic#enabled = 1
+    let g:airline#extensions#branch#enabled = 1
+    let g:airline#extensions#tabline#enabled = 1
+    let g:airline#extensions#tabline#formatter = 'default'
+    let g:airline#extensions#tabline#show_splits = 1
+    let g:airline#extensions#tabline#tab_nr_type = 1
+    let g:airline#extensions#tabline#buffer_nr_show = 1
+    let g:airline#extensions#tagbar#enabled = 1
+    let g:airline_skip_empty_sections = 1
+endif
 
 "*****************************************************************************
 " Basic Setup

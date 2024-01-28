@@ -9,6 +9,9 @@ services:
       - ${HOME}/.Xauthority:/root/.Xauthority
       - ./workdir:/root/workdir
       - ./settings:/root/settings
+      - ./setup:/root/setup
+      - ./custom:/root/custom
+      - ./init.sh:/root/init.sh
     environment:
       - 'PS1=[\u@\h \W] \$$ '
       - DISPLAY=${HOSTNAME}:0
