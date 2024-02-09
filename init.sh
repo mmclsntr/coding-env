@@ -4,7 +4,13 @@ current_dir=$(pwd)
 
 cd "$(dirname "$0")"
 
+prj_path=$1
+
 export HOSTNAME=`hostname` 
+
+# create workdir link
+rm -f workdir
+ln -s $prj_path workdir
 
 # setup env
 docker compose up -d --build
