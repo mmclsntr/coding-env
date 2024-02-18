@@ -2,34 +2,36 @@
 
 
 ## Setup
-1) Install XQuartz
+### 1) Install X11
+For macOS
+- https://www.xquartz.org/
 
-2) Create workspace symbolic link
+### 2) Setup config file
+Copy `custom/setup_config_default.json` to create `custom/setup_config.json`
+
+And, edit versions.
+
+> If `custom/setup_config.json` doesn't exist, `custom/setup_config_default.json` is used.
+
+Support languages
+
+| language |
+|---|
+| Node.js |
+| Python |
+| Golang |
+| Java |
+
+### 3) Run init script
 
 ```sh
-ln -s {workspace} workdir
-```
-
-3) Run init script
-
-```sh
-./init.sh
+./init.sh filepath
 ```
 
 ## for global vim
 Add alias to `.zshrc`
 
 ```sh
-alias mvim='sh ~/coding-env/run_vim.sh /root/workdir'
+alias mvim='sh ~/coding-env/run_vim.sh'
 ```
 
-## Config
-
-Edit `custom/setup_config.json`
-
-## Support language
-
-- Node.js
-- Python
-- Golang
-- Java

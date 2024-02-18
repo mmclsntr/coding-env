@@ -28,7 +28,6 @@ RUN git clone https://github.com/vim/vim.git -b v9.1.0042 /root/vim
 WORKDIR /root/vim/src
 RUN make 
 RUN make install
-
 # Vim plug
 RUN curl -fLo /root/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
