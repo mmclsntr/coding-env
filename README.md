@@ -32,6 +32,6 @@ Support languages
 Add alias to `.zshrc`
 
 ```sh
-alias mvim='sh ~/coding-env/run_vim.sh'
+alias mvim='~/coding-env/run_vim.sh ${$(pwd)#$HOME} '
 ```
 

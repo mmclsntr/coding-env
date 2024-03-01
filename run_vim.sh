@@ -1,16 +1,15 @@
 #!/bin/bash
 
+dir=$1
+file=$2
 
-current_dir=$(pwd)
+echo $dir
 
 cd "$(dirname "$0")"
 
-file=$1
-
 base="/root/workdir"
 
-abs_dir=${current_dir#$HOME}
-working_dir=${base%/}/${abs_dir#/}
+working_dir=${base%/}/${dir#/}
 
 echo $working_dir
 
@@ -19,6 +18,5 @@ if [ -z "$file" ]; then
 else
 	echo $file
 fi
-
 
 HOSTNAME=`hostname` docker compose exec -w $working_dir workspace /bin/bash -c "source ~/.bashrc && vim $file"
