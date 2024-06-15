@@ -12,6 +12,7 @@ services:
       - ./setup:/root/setup
       - ./custom:/root/custom
       - ./init.sh:/root/init.sh
+    network_mode: host 
     environment:
       - 'PS1=[\u@\h \W] \$$ '
       - DISPLAY=${HOSTNAME}:0
