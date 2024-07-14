@@ -1,4 +1,4 @@
-#!/bin/bash +xe
+#!/bin/bash -xe
 
 current_dir=$(pwd)
 cd "$(dirname "$0")"
@@ -19,26 +19,26 @@ echo $setup_config
 # install nodejs
 nodejs_version=`echo $setup_config | jq -r ".nodejs.version // empty"`
 if [ -n "$nodejs_version" ]; then
-    bash nodejs.sh $nodejs_version
+    ./nodejs.sh $nodejs_version
 fi
 
 # install python
 python_version=`echo $setup_config | jq -r ".python.version // empty"`
 if [ -n "$python_version" ]; then
-	bash python.sh $python_version
+	./python.sh $python_version
 fi
 
 # install golang
 golang_version=`echo $setup_config | jq -r ".golang.version // empty"`
 if [ -n "$golang_version" ]; then
-	bash golang.sh $golang_version
+	./golang.sh $golang_version
 fi
 
 # install java
 java_version=`echo $setup_config | jq -r ".java.version // empty"`
 if [ -n "$java_version" ]; then
-	bash java.sh $java_version
+	./java.sh $java_version
 fi
 
 # Install LSP for text types
-bash text_types.sh
+./text_types.sh

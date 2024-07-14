@@ -1,8 +1,27 @@
-version: "3.0"
-
 services:
   workspace:
-    build: .
+    build:
+      context: .
+      target: workspace
+    restart: always
+    tty: true
+    volumes:
+      - ${HOME}/.Xauthority:/root/.Xauthority
+      - ./workdir:/root/workdir
+      - ./settings:/root/settings
+      - ./setup:/root/setup
+      - ./custom:/root/custom
+      - ./init.sh:/root/init.sh
+    network_mode: host 
+    environment:
+      - 'PS1=[\u@\h \W] \$$ '
+      - DISPLAY=${HOSTNAME}:0
+    command: /bin/bash -c "bash"
+
+  build-env:
+    build:
+      context: .
+      target: build-env
     restart: always
     tty: true
     volumes:

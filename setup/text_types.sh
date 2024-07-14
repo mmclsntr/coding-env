@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xe
 
 current_dir=$(pwd)
 cd "$(dirname "$0")"
