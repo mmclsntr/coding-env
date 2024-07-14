@@ -18,9 +18,9 @@ if [ -z "$path" ]; then
     filename=""
 else
 	echo "file: $path"
-    filedir=$(dirname "$path")
+    filedir=$(cd $(dirname $path); pwd)
     filename=$(basename "$path")
-    abs_dir=${current_dir#$HOME}/${filedir}
+    abs_dir=${filedir#$HOME}
     working_dir=${base%/}/${abs_dir#/}
 fi
 
@@ -30,7 +30,7 @@ else
     restore_cmd=""
 fi
 
-echo "file name: ${working_dir}"
+echo "file name: ${filename}"
 echo "working_dir: ${working_dir}"
 
 xhost + localhost && HOSTNAME=`hostname` docker compose exec -w $working_dir workspace /bin/bash -c "source ~/.bashrc && vim $restore_cmd $filename"
