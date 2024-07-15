@@ -11,13 +11,13 @@ start:
 	${exec_cmd} up workspace -d
 
 down:
-	${exec_cmd} down workspace
+	${exec_cmd} down workspace --rmi all
 
 vim:
-	./run_vim.sh restore ${FILE}
+	${exec_cmd} exec workspace /bin/bash -c "source ~/.bashrc && vim -c 'call Restore_session()' ${FILE}"
 
 vim-new:
-	./run_vim.sh new ${FILE}
+	${exec_cmd} exec workspace /bin/bash -c "source ~/.bashrc && vim ${FILE}"
 
 term:
 	${exec_cmd} exec workspace bash
@@ -32,7 +32,7 @@ start-env:
 	${exec_cmd} up build-env -d
 
 down-env:
-	${exec_cmd} down build-env
+	${exec_cmd} down build-env --rmi all
 
 term-env:
 	${exec_cmd} exec build-env bash

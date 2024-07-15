@@ -9,7 +9,7 @@ version=$1
 asdf plugin add java
 asdf install java $version
 
-asdf install reshim $version
+asdf reshim java
 
 asdf global java $version
 

@@ -74,6 +74,7 @@ COPY --from=build-vim /usr/local/share/vim /usr/local/share/vim
 
 COPY --from=build-env /root/.deno/bin/deno /usr/local/bin/deno
 COPY --from=build-env /root/.asdf /root/.asdf
+COPY --from=build-env /root/.tool-versions /root/.tool-versions
 
 RUN apt-get update \
     && apt-get install -y  \
