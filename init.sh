@@ -16,3 +16,5 @@ export HOSTNAME=`hostname`
 # create workdir link
 rm -f workdir
 ln -s $prj_path workdir
+
+make build-and-start

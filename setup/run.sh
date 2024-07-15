@@ -5,13 +5,13 @@ cd "$(dirname "$0")"
 
 custom_dir="../custom"
 
-setup_config_default_file="${custom_dir}/setup_config_default.json"
 setup_config_file="${custom_dir}/setup_config.json"
 
 if [ -f $setup_config_file ]; then
     setup_config=`cat $setup_config_file`
 else
-    setup_config=`cat $setup_config_default_file`
+    # no language server
+    setup_config="{}"
 fi
 
 echo $setup_config
