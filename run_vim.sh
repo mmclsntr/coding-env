@@ -3,8 +3,6 @@
 
 current_dir=$(pwd)
 
-cd "$(dirname "$0")"
-
 sub=$1
 path=$2
 
@@ -19,6 +17,7 @@ if [ -z "$path" ]; then
 else
 	echo "file: $path"
     filedir=$(cd $(dirname $path); pwd)
+    echo $filedir
     filename=$(basename "$path")
     abs_dir=${filedir#$HOME}
     working_dir=${base%/}/${abs_dir#/}
@@ -32,5 +31,7 @@ fi
 
 echo "file name: ${filename}"
 echo "working_dir: ${working_dir}"
+
+cd "$(dirname "$0")"
 
 xhost + localhost && HOSTNAME=`hostname` docker compose exec -w $working_dir workspace /bin/bash -c "source ~/.bashrc && vim $restore_cmd $filename"

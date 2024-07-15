@@ -11,7 +11,7 @@ if [ -f $setup_config_file ]; then
     setup_config=`cat $setup_config_file`
 else
     # no language server
-    setup_config="{}"
+    setup_config='{"nodejs": { "version": "20.11.0" }}'
 fi
 
 echo $setup_config
