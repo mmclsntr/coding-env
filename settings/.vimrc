@@ -134,6 +134,7 @@ endfunction
 "*****************************************************************************
 
 " Encoding
+set modifiable
 set encoding=utf8
 set fileencoding=utf8
 set fileencodings=utf8
@@ -348,6 +349,7 @@ if s:is_plugged("fern.vim")
       nmap <buffer> <nowait> i <Plug>(fern-action-hidden:toggle)
       nmap <buffer> c <Plug>(fern-action-clipboard-copy)
       nmap <buffer> p <Plug>(fern-action-clipboard-paste)
+      nmap <buffer> <C-E> <Plug>(fern-action-enter)
     endfunction
 
     augroup fern-custom
