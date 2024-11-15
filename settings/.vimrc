@@ -586,6 +586,7 @@ if s:is_plugged("ddc.vim") && s:is_plugged("pum.vim")
 endif
 
 if s:is_plugged("denops-popup-preview.vim") && s:is_plugged("denops-signature_help")
+    let g:denops_disable_version_check = 1
     " popup
     call popup_preview#enable()
     call signature_help#enable()
